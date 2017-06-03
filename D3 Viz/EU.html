@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<style>
+  #container{
+    cursor: pointer;
+    width: 100%;
+    height: 715px;
+    align-content: center;
+  }
+
+</style>
+<body>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.0/topojson.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datamaps/0.5.8/datamaps.world.hires.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<div id="container"" ></div>
+<script>
+    var scale = d3.scale.linear().domain([1, 2608]).range([3, 7])
+    var scale2 = d3.scale.linear().domain([1, 2608]).range([1, 5])
+    var colors = ["#2a592c", "#f17f21", "#ecd942" , "#2680c3", "#4ec8f4", "#b4f7ce", "#588c7e", '#0066ff','#00cc66', '#ff0066']
+
+    function colorScale(n){
+      if (n == 'ITA'){return colors[1]}
+      else if (n == 'FRA'){return colors[2]}
+      else if (n == 'IRL'){return colors[3]}
+      else if (n == 'DEU'){return colors[4]}
+      else if (n == 'ESP'){return colors[5]}
+      else if (n == 'NLD'){return colors[6]}
+      else if (n == 'DNK'){return colors[7]}
+      else if (n == 'GBR'){return colors[8]}
+      else if (n == 'AUT'){return colors[9]}
+    }
+    var arcs = new Datamap({
+        element: document.getElementById('container'),
+        scope:'world',
+        setProjection: function(element) {
+    var projection = d3.geo.mercator()
+      .center([9, 48])
+      .rotate([4.4, 0])
+      .scale(1100)
+      .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+    var path = d3.geo.path()
+      .projection(projection);
+
+    return {path: path, projection: projection};
+  },
+        fills: {
+    defaultFill: "#c1bbbb",
+    ITA: colors[1],
+    FRA: colors[2],
+    IRL: colors[3],
+    DEU: colors[4],
+    ESP: colors[5],
+    NLD: colors[6],
+    DNK: colors[7],
+    GBR: colors[8],
+    AUT: colors[9]
+  },
+  geographyConfig: {
+    highlightBorderColor: '#99ff66',
+   popupTemplate: function(geography, data) {
+
+    if (geography.properties.name == 'France'){
+      return '<div class="hoverinfo">' + '<b>'+geography.properties.name+'</b>' + "<br/><br/>"  + 'Mentions to Germany: ' + data.mentions_to_DEU + '<br/>' + "Mentions to United Kingdom: " + data.mentions_to_GBR + '<br/>' + "Mentions to Italy: " + data.mentions_to_ITA+'<br/>'+ "Mentions to Spain: " + data.mentions_to_ESP+'<br/>'+ "Mentions to Denmark: " + data.mentions_to_DNK+'<br/>'+ "Mentions to Austria: " + data.mentions_to_AUT+'<br/>'+ "Mentions to Netherlands: " + data.mentions_to_NLD+ '<br/>'+ 'Mentions to Ireland: ' + data.mentions_to_IRL
+    }
+
+    else if(geography.properties.name == 'Spain'){
+      return '<div class="hoverinfo">' + '<b>'+geography.properties.name+'</b>' + "<br/><br/>" + 'Mentions to France: '+ data.mentions_to_FRA + '<br/>' + 'Mentions to Germany: ' + data.mentions_to_DEU + '<br/>' + "Mentions to United Kingdom: " + data.mentions_to_GBR + '<br/>' + "Mentions to Italy: " + data.mentions_to_ITA+'<br/>'+ "Mentions to Denmark: " + data.mentions_to_DNK+'<br/>'+ "Mentions to Austria: " + data.mentions_to_AUT+'<br/>'+ "Mentions to Netherlands: " + data.mentions_to_NLD +'<br/>'+ 'Mentions to Ireland: ' + data.mentions_to_IRL
+    }
+
+    else if(geography.properties.name == 'Germany'){
+      return '<div class="hoverinfo">' + '<b>'+geography.properties.name+'</b>' + "<br/><br/>" + 'Mentions to France: '+ data.mentions_to_FRA + '<br/>' + "Mentions to United Kingdom: " + data.mentions_to_GBR + '<br/>' + "Mentions to Italy: " + data.mentions_to_ITA+'<br/>'+ "Mentions to Spain: "+ data.mentions_to_ESP + data.mentions_to_DNK+'<br/>'+ "Mentions to Austria: " + data.mentions_to_AUT+'<br/>'+ "Mentions to Netherlands: " + data.mentions_to_NLD+'<br/>' + 'Mentions to Ireland: ' + data.mentions_to_IRL
+    }
+
+    else if(geography.properties.name == 'United Kingdom'){
+      return '<div class="hoverinfo">' + '<b>'+geography.properties.name+'</b>' + "<br/><br/>" + 'Mentions to France: '+ data.mentions_to_FRA + '<br/>' + 'Mentions to Germany: ' + data.mentions_to_DEU + '<br/>'  + "Mentions to Italy: " + data.mentions_to_ITA+'<br/>'+ "Mentions to Spain: "+ data.mentions_to_ESP+'<br/>'+ "Mentions to Denmark: " + data.mentions_to_DNK+'<br/>'+ "Mentions to Austria: " + data.mentions_to_AUT+'<br/>'+ "Mentions to Netherlands: " + data.mentions_to_NLD+'<br/>'+ 'Mentions to Ireland: ' + data.mentions_to_IRL
+    }
+
+    else if(geography.properties.name == 'Italy'){
+      return '<div class="hoverinfo">' + '<b>'+geography.properties.name+'</b>' + "<br/><br/>" +'Mentions to France: '+ data.mentions_to_FRA + '<br/>' + 'Mentions to Germany: ' + data.mentions_to_DEU + '<br/>' + "Mentions to United Kingdom: " + data.mentions_to_GBR +'<br/>'+ "Mentions to Spain: " +data.mentions_to_ESP+'<br/>'+ "Mentions to Denmark: " + data.mentions_to_DNK+'<br/>'+ "Mentions to Austria: " + data.mentions_to_AUT+'<br/>'+ "Mentions to Netherlands: " + data.mentions_to_NLD+'<br/>'+ 'Mentions to Ireland: ' + data.mentions_to_IRL
+    }
+    else if(geography.properties.name == 'Denmark'){
+      return '<div class="hoverinfo">' + '<b>'+geography.properties.name+'</b>' + "<br/><br/>"  + 'Mentions to Germany: ' + data.mentions_to_DEU + '<br/>' + "Mentions to United Kingdom: " + data.mentions_to_GBR + '<br/>' + "Mentions to Italy: " + data.mentions_to_ITA+'<br/>'+ "Mentions to Spain: " + data.mentions_to_ESP+'<br/>'+ 'Mentions to France: '+ data.mentions_to_FRA+'<br/>'+ "Mentions to Austria: " + data.mentions_to_AUT+'<br/>'+ "Mentions to Netherlands: " + data.mentions_to_NLD+'<br/>'+ 'Mentions to Ireland: ' + data.mentions_to_IRL
+    }
+    else if(geography.properties.name == 'Austria'){
+      return '<div class="hoverinfo">' + '<b>'+geography.properties.name+'</b>' + "<br/><br/>" + 'Mentions to France: '+ data.mentions_to_FRA + '<br/>' + 'Mentions to Spain: '+ data.mentions_to_ESP + '<br/>' +'Mentions to Germany: ' + data.mentions_to_DEU + '<br/>' + "Mentions to United Kingdom: " + data.mentions_to_GBR + '<br/>' + "Mentions to Italy: " + data.mentions_to_ITA+'<br/>'+ "Mentions to Denmark: " + data.mentions_to_DNK+'<br/>'+  "Mentions to Netherlands: " + data.mentions_to_NLD+'<br/>'+ 'Mentions to Ireland: ' + data.mentions_to_IRL
+    }
+    else if(geography.properties.name == 'Netherlands'){
+      return '<div class="hoverinfo">' + '<b>'+geography.properties.name+'</b>' + "<br/><br/>" +'Mentions to France: '+ data.mentions_to_FRA + '<br/>' + 'Mentions to Germany: ' + data.mentions_to_DEU + '<br/>' + "Mentions to United Kingdom: " + data.mentions_to_GBR +'<br/>'+ "Mentions to Spain: " +data.mentions_to_ESP+'<br/>'+ "Mentions to Denmark: " + data.mentions_to_DNK+'<br/>'+ "Mentions to Austria: " + data.mentions_to_AUT+'<br/>'+ "Mentions to Italy: " + data.mentions_to_ITA+'<br/>'+ 'Mentions to Ireland: ' + data.mentions_to_IRL
+    }
+    else if(geography.properties.name == 'Ireland'){
+      return '<div class="hoverinfo">' + '<b>'+geography.properties.name+'</b>' + "<br/><br/>" +'Mentions to France: '+ data.mentions_to_FRA + '<br/>' + 'Mentions to Germany: ' + data.mentions_to_DEU + '<br/>' + "Mentions to United Kingdom: " + data.mentions_to_GBR +'<br/>'+ "Mentions to Spain: " +data.mentions_to_ESP+'<br/>'+ "Mentions to Denmark: " + data.mentions_to_DNK+'<br/>'+ "Mentions to Austria: " + data.mentions_to_AUT+'<br/>'+ "Mentions to Netherlands: " + data.mentions_to_NLD+'<br/>' + "Mentions to Italy: " + data.mentions_to_ITA
+    }
+
+    },
+    highlightBorderWidth: 2,
+    highlightFillColor: '#ff3300'
+    },
+  data: {
+    'ITA': {'mentions_to_ITA': 47, 'mentions_to_ESP': 27, 'mentions_to_DEU': 5, 'mentions_to_GBR': 34, 'mentions_to_NLD': 3, 'mentions_to_FRA': 19, 'mentions_to_AUT': 0, 'mentions_to_DNK': 4, 'mentions_to_IRL': 0, 'fillKey': 'ITA'}, 
+    'FRA': {'mentions_to_ITA': 25, 'mentions_to_ESP': 120, 'mentions_to_DEU': 16, 'mentions_to_GBR': 64, 'mentions_to_NLD': 13, 'mentions_to_FRA': 336, 'mentions_to_AUT': 14, 'mentions_to_DNK': 1, 'mentions_to_IRL': 5, 'fillKey': 'FRA'}, 
+    'IRL': {'mentions_to_ITA': 5, 'mentions_to_ESP': 6, 'mentions_to_DEU': 0, 'mentions_to_GBR': 142, 'mentions_to_NLD': 3, 'mentions_to_FRA': 6, 'mentions_to_AUT': 0, 'mentions_to_DNK': 2, 'mentions_to_IRL': 107, 'fillKey': 'IRL'}, 
+    'DEU': {'mentions_to_ITA': 24, 'mentions_to_ESP': 35, 'mentions_to_DEU': 121, 'mentions_to_GBR': 17, 'mentions_to_NLD': 0, 'mentions_to_FRA': 28, 'mentions_to_AUT': 9, 'mentions_to_DNK': 3, 'mentions_to_IRL': 0, 'fillKey': 'DEU'}, 
+    'ESP': {'mentions_to_ITA': 59, 'mentions_to_ESP': 1474, 'mentions_to_DEU': 32, 'mentions_to_GBR': 339, 'mentions_to_NLD': 19, 'mentions_to_FRA': 108, 'mentions_to_AUT': 8, 'mentions_to_DNK': 24, 'mentions_to_IRL': 3, 'fillKey': 'ESP'}, 
+    'NLD': {'mentions_to_ITA': 5, 'mentions_to_ESP': 11, 'mentions_to_DEU': 2, 'mentions_to_GBR': 34, 'mentions_to_NLD': 43, 'mentions_to_FRA': 17, 'mentions_to_AUT': 1, 'mentions_to_DNK': 3, 'mentions_to_IRL': 1, 'fillKey': 'NLD'}, 
+    'DNK': {'mentions_to_ITA': 7, 'mentions_to_ESP': 33, 'mentions_to_DEU': 3, 'mentions_to_GBR': 23, 'mentions_to_NLD': 1, 'mentions_to_FRA': 18, 'mentions_to_AUT': 3, 'mentions_to_DNK': 60, 'mentions_to_IRL': 0, 'fillKey': 'DNK'}, 
+    'GBR': {'mentions_to_ITA': 23, 'mentions_to_ESP': 167, 'mentions_to_DEU': 6, 'mentions_to_GBR': 2901, 'mentions_to_NLD': 17, 'mentions_to_FRA': 29, 'mentions_to_AUT': 3, 'mentions_to_DNK': 9, 'mentions_to_IRL': 88, 'fillKey': 'GBR'}, 
+    'AUT': {'mentions_to_ITA': 2, 'mentions_to_ESP': 1, 'mentions_to_DEU': 1, 'mentions_to_GBR': 0, 'mentions_to_NLD': 0, 'mentions_to_FRA': 2, 'mentions_to_AUT': 7, 'mentions_to_DNK': 0, 'mentions_to_IRL': 0, 'fillKey': 'AUT'}
+  }
+
+    });
+    arcs.arc([{origin: 'ITA', destination: 'FRA', options: {strokeColor: colorScale('ITA'), strokeWidth: scale(19)}}, {origin: 'ITA', destination: 'DEU', options: {strokeColor: colorScale('ITA'), strokeWidth: scale(5)}}, {origin: 'ITA', destination: 'ESP', options: {strokeColor: colorScale('ITA'), strokeWidth: scale(27)}}, {origin: 'ITA', destination: 'NLD', options: {strokeColor: colorScale('ITA'), strokeWidth: scale(3)}}, {origin: 'ITA', destination: 'DNK', options: {strokeColor: colorScale('ITA'), strokeWidth: scale(4)}}, {origin: 'ITA', destination: 'GBR', options: {strokeColor: colorScale('ITA'), strokeWidth: scale(34)}}, {origin: 'FRA', destination: 'ITA', options: {strokeColor: colorScale('FRA'), strokeWidth: scale(25)}}, {origin: 'FRA', destination: 'IRL', options: {strokeColor: colorScale('FRA'), strokeWidth: scale(5)}}, {origin: 'FRA', destination: 'DEU', options: {strokeColor: colorScale('FRA'), strokeWidth: scale(16)}}, {origin: 'FRA', destination: 'ESP', options: {strokeColor: colorScale('FRA'), strokeWidth: scale(120)}}, {origin: 'FRA', destination: 'NLD', options: {strokeColor: colorScale('FRA'), strokeWidth: scale(13)}}, {origin: 'FRA', destination: 'DNK', options: {strokeColor: colorScale('FRA'), strokeWidth: scale(1)}}, {origin: 'FRA', destination: 'GBR', options: {strokeColor: colorScale('FRA'), strokeWidth: scale(64)}}, {origin: 'FRA', destination: 'AUT', options: {strokeColor: colorScale('FRA'), strokeWidth: scale(14)}}, {origin: 'IRL', destination: 'ITA', options: {strokeColor: colorScale('IRL'), strokeWidth: scale(5)}}, {origin: 'IRL', destination: 'FRA', options: {strokeColor: colorScale('IRL'), strokeWidth: scale(6)}}, {origin: 'IRL', destination: 'ESP', options: {strokeColor: colorScale('IRL'), strokeWidth: scale(6)}}, {origin: 'IRL', destination: 'NLD', options: {strokeColor: colorScale('IRL'), strokeWidth: scale(3)}},{origin: 'IRL', destination: 'DNK', options: {strokeColor: colorScale('IRL'), strokeWidth: scale(2)}}, {origin: 'IRL', destination: 'GBR', options: {strokeColor: colorScale('IRL'), strokeWidth: scale(142)}}, {origin: 'DEU', destination: 'ITA', options: {strokeColor: colorScale('DEU'), strokeWidth: scale(24)}}, {origin: 'DEU', destination: 'FRA', options: {strokeColor: colorScale('DEU'), strokeWidth: scale(28)}}, {origin: 'DEU', destination: 'ESP', options: {strokeColor: colorScale('DEU'), strokeWidth: scale(35)}}, {origin: 'DEU', destination: 'DNK', options: {strokeColor: colorScale('DEU'), strokeWidth: scale(3)}}, {origin: 'DEU', destination: 'GBR', options: {strokeColor: colorScale('DEU'), strokeWidth: scale(17)}}, {origin: 'DEU', destination: 'AUT', options: {strokeColor: colorScale('DEU'), strokeWidth: scale(9)}}, {origin: 'ESP', destination: 'ITA', options: {strokeColor: colorScale('ESP'), strokeWidth: scale(59)}}, {origin: 'ESP', destination: 'FRA', options: {strokeColor: colorScale('ESP'), strokeWidth: scale(108)}}, {origin: 'ESP', destination: 'IRL', options: {strokeColor: colorScale('ESP'), strokeWidth: scale(3)}}, {origin: 'ESP', destination: 'DEU', options: {strokeColor: colorScale('ESP'), strokeWidth: scale(32)}}, {origin: 'ESP', destination: 'NLD', options: {strokeColor: colorScale('ESP'), strokeWidth: scale(19)}}, {origin: 'ESP', destination: 'DNK', options: {strokeColor: colorScale('ESP'), strokeWidth: scale(24)}}, {origin: 'ESP', destination: 'GBR', options: {strokeColor: colorScale('ESP'), strokeWidth: scale(339)}}, {origin: 'ESP', destination: 'AUT', options: {strokeColor: colorScale('ESP'), strokeWidth: scale(8)}}, {origin: 'NLD', destination: 'ITA', options: {strokeColor: colorScale('NLD'), strokeWidth: scale(5)}}, {origin: 'NLD', destination: 'FRA', options: {strokeColor: colorScale('NLD'), strokeWidth: scale(17)}}, {origin: 'NLD', destination: 'IRL', options: {strokeColor: colorScale('NLD'), strokeWidth: scale(1)}}, {origin: 'NLD', destination: 'DEU', options: {strokeColor: colorScale('NLD'), strokeWidth: scale(2)}}, {origin: 'NLD', destination: 'ESP', options: {strokeColor: colorScale('NLD'), strokeWidth: scale(11)}}, {origin: 'NLD', destination: 'DNK', options: {strokeColor: colorScale('NLD'), strokeWidth: scale(3)}}, {origin: 'NLD', destination: 'GBR', options: {strokeColor: colorScale('NLD'), strokeWidth: scale(34)}}, {origin: 'NLD', destination: 'AUT', options: {strokeColor: colorScale('NLD'), strokeWidth: scale(1)}}, {origin: 'DNK', destination: 'ITA', options: {strokeColor: colorScale('DNK'), strokeWidth: scale(7)}}, {origin: 'DNK', destination: 'FRA', options: {strokeColor: colorScale('DNK'), strokeWidth: scale(18)}}, {origin: 'DNK', destination: 'DEU', options: {strokeColor: colorScale('DNK'), strokeWidth: scale(3)}}, {origin: 'DNK', destination: 'ESP', options: {strokeColor: colorScale('DNK'), strokeWidth: scale(33)}}, {origin: 'DNK', destination: 'NLD', options: {strokeColor: colorScale('DNK'), strokeWidth: scale(1)}}, {origin: 'DNK', destination: 'GBR', options: {strokeColor: colorScale('DNK'), strokeWidth: scale(23)}}, {origin: 'DNK', destination: 'AUT', options: {strokeColor: colorScale('DNK'), strokeWidth: scale(3)}}, {origin: 'GBR', destination: 'ITA', options: {strokeColor: colorScale('GBR'), strokeWidth: scale(23)}}, {origin: 'GBR', destination: 'FRA', options: {strokeColor: colorScale('GBR'), strokeWidth: scale(29)}}, {origin: 'GBR', destination: 'IRL', options: {strokeColor: colorScale('GBR'), strokeWidth: scale(88)}}, {origin: 'GBR', destination: 'DEU', options: {strokeColor: colorScale('GBR'), strokeWidth: scale(6)}}, {origin: 'GBR', destination: 'ESP', options: {strokeColor: colorScale('GBR'), strokeWidth: scale(167)}}, {origin: 'GBR', destination: 'NLD', options: {strokeColor: colorScale('GBR'), strokeWidth: scale(17)}}, {origin: 'GBR', destination: 'DNK', options: {strokeColor: colorScale('GBR'), strokeWidth: scale(9)}}, {origin: 'GBR', destination: 'AUT', options: {strokeColor: colorScale('GBR'), strokeWidth: scale(3)}}, {origin: 'AUT', destination: 'ITA', options: {strokeColor: colorScale('AUT'), strokeWidth: scale(2)}}, {origin: 'AUT', destination: 'FRA', options: {strokeColor: colorScale('AUT'), strokeWidth: scale(2)}}, {origin: 'AUT', destination: 'DEU', options: {strokeColor: colorScale('AUT'), strokeWidth: scale(1)}}, {origin: 'AUT', destination: 'ESP', options: {strokeColor: colorScale('AUT'), strokeWidth: scale(1)}} ],  {arcSharpness: 1.4, animationSpeed: 6000});
+
+
+
+</script>
+<script>
+  $(document).ready(function() {
+    $('#container').fadeIn(1000)
+    $('path.datamaps-subunit').css('opacity', '0.6')
+    $('path.datamaps-subunit.FRA').on('mouseover', function(){
+      $(this).css('opacity', '1')
+    }).on('mouseout', function(){
+      $(this).css('opacity', '0.6')
+    })
+    $('path.datamaps-subunit.DEU').on('mouseover', function(){
+      $(this).css('opacity', '1')
+    }).on('mouseout', function(){
+      $(this).css('opacity', '0.6')
+    })
+    $('path.datamaps-subunit.GBR').on('mouseover', function(){
+      $(this).css('opacity', '1')
+    }).on('mouseout', function(){
+      $(this).css('opacity', '0.6')
+    })
+    $('path.datamaps-subunit.ITA').on('mouseover', function(){
+      $(this).css('opacity', '1')
+    }).on('mouseout', function(){
+      $(this).css('opacity', '0.6')
+    })
+    $('path.datamaps-subunit.ESP').on('mouseover', function(){
+      $(this).css('opacity', '1')
+    }).on('mouseout', function(){
+      $(this).css('opacity', '0.6')
+    })
+    $('path.datamaps-subunit.AUT').on('mouseover', function(){
+      $(this).css('opacity', '1')
+    }).on('mouseout', function(){
+      $(this).css('opacity', '0.6')
+    })
+    $('path.datamaps-subunit.IRL').on('mouseover', function(){
+      $(this).css('opacity', '1')
+    }).on('mouseout', function(){
+      $(this).css('opacity', '0.6')
+    })
+    $('path.datamaps-subunit.DNK').on('mouseover', function(){
+      $(this).css('opacity', '1')
+    }).on('mouseout', function(){
+      $(this).css('opacity', '0.6')
+    })
+    $('path.datamaps-subunit.NLD').on('mouseover', function(){
+      $(this).css('opacity', '1')
+    }).on('mouseout', function(){
+      $(this).css('opacity', '0.6')
+    })
+
+
+
+  });
+</script>
+<script>
+
+</script>
+
+</body>
+</html>

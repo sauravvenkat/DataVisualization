@@ -1,0 +1,229 @@
+
+        <html>
+        <head>
+            <script src="https://d3js.org/d3.v4.min.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+            <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+            <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+            <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        </head>
+
+        <body text=000000><center><h2>Network Visualization</h2></center><br><table align=center border=0 cellspacing=5><tr><td width=10></td><td bgcolor=#ea5532 width=20></td><td>HCPs - 25.49%</td><td width=10></td><td bgcolor=#da5283 width=20></td><td>Advocacy - 12.55%</td><td width=10></td><td bgcolor=#9b72b0 width=20></td><td>Media - 19.61%</td><td width=10></td><td bgcolor=#51b1bf width=20></td><td>Industry - 36.47%</td><td width=10></td><td bgcolor=#abb436 width=20></td><td>Patients - 5.88%</td><td width=10></td></tr></table><br>
+                <svg width="1960" height="1000"></svg>
+        </body>
+
+        <style>
+        	.link {
+          stroke: #aaa;
+        }
+
+        .node {
+          pointer-events: all;
+          stroke: none;
+          stroke-width: 40px;
+          cursor: pointer;
+        }
+        body{
+        	background-color: white
+        }
+        svg{
+          cursor: -webkit-grab;
+          width: 100%;
+        }
+        svg:active{
+          cursor: -webkit-grabbing;
+        }
+        </style>
+
+        <script>
+        
+        graph = REPLACEMEYASH
+
+        var nodes = graph.nodes
+
+        var links = graph.links
+
+        var myheight = 500;
+         var mywidth = 1960;
+
+        var index = 10;
+        var svg = d3.select("svg").call(d3.zoom().scaleExtent([1 / 3, 2.5]).on("zoom", function () {svg.attr("transform", d3.event.transform)})).append("g"),
+                                width = +mywidth,
+                                height = +myheight;
+
+
+        var simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(function(d) { return d.id; }))
+            .force("charge", d3.forceManyBody().theta(1).distanceMax(1000).strength(-200))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .alphaDecay(0.001)
+                    .alpha(1)
+                    .force("y", d3.forceY())
+                    .force("x", d3.forceX());
+
+        update();
+        function update() {
+          link = svg.selectAll(".link")
+            .data(links, function(d) { return d.target.id; })
+
+          link = link.enter()
+            .append("line")
+            .attr("class", "link")
+            .attr('id', function(d){
+      return d.target.toString().replace(' ','') + d.source.toString().replace(' ','')
+      } )
+            .attr('stroke-width',function(d){return d.target - d.source});
+
+          node = svg.selectAll(".node")
+            .data(nodes, function(d) { return d.id; })
+
+          node = node.enter()
+            .append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+            var radius = d3.scaleQuantile()
+                    .domain([0, 100000, 1500000])
+                    .range([1,2,3,4,5,6,7,8,9,10,12,14]);
+
+           **COLORINFO**
+
+
+
+          node.append("circle")
+          	.attr('class', 'node')
+            .attr("r", function(d) { return radius(d.subs); }).attr('fill', function(d) { return color[d.group -1]})
+            .attr('id', function(d){
+              return d.id.toString().replace(' ', '')
+            })
+            .on('mouseover', function(){
+              var id1 = (this).getAttribute('id').toString()
+              showLinks(id1)
+
+            })
+            .on('mouseout', function(){
+              dimLinks()
+              BrightenLinks()
+              BrightenNodes()
+            })
+
+          node.append("title")
+              .text(function(d) { return d.id; });
+
+          node.append("text")
+              .attr('fill','black')
+              .attr('font-family','Arial')
+              .attr('font-size', function(d){
+        return radius(d.subs) + 'px'
+      })
+              .attr('align-content', 'center')
+              .attr('text-anchor', 'top')
+              .attr('opacity', 1)
+              .attr('dy', '-1em')
+              .attr('dx', '-3em')
+              .text(function(d) { return d.id })
+
+          simulation
+              .nodes(nodes)
+              .on("tick", ticked);
+
+          simulation.force("link")
+              .links(links);
+        }
+
+        function ticked() {
+          link
+              .attr("x1", function(d) { return d.source.x; })
+              .attr("y1", function(d) { return d.source.y; })
+              .attr("x2", function(d) { return d.target.x; })
+              .attr("y2", function(d) { return d.target.y; });
+
+          node
+              .attr("transform", function(d) { return "translate(" + d.x + ", " + d.y + ")"; });
+
+        }
+
+
+        function dragstarted(d) {
+          if (!d3.event.active) simulation.alphaTarget(0.8).restart()
+        }
+
+        function dragged(d) {
+          d.fx = d3.event.x;
+          d.fy = d3.event.y;
+        }
+
+        function dragended(d) {
+          if (!d3.event.active) simulation.alphaTarget(0.7);
+          d.fx = undefined;
+          d.fy = undefined;
+        }
+
+        var nodes1 = document.getElementsByClassName('node')
+        var links1 = document.getElementsByClassName('link')
+        var link_ids = []
+        var node_ids = []
+        for(i = 0; i < links1.length; i++){
+            link_ids.push( links1[i].getAttribute('id'))
+        }
+
+        for (i=0; i< nodes1.length; i++){
+          node_ids.push( nodes1[i].getAttribute('id'))
+        }
+
+
+        function showLinks(id1){
+          dimLinks()
+          dimNodes()
+          $('#' + id1).css({'opacity': '1'})
+          var links_linked = []
+          var nodes_linked = []
+          for (i=0; i < link_ids.length; i++){
+            if (link_ids[i].includes(id1)){
+              links_linked.push(link_ids[i])
+            }
+
+    
+          }
+          for (i=0;  i < links.length; i++){
+            if( id1 == links[i].source.id.toString().replace(' ','') || id1 == links[i].target.id.toString().replace(' ','')){
+              $('#' + links[i].target.id.toString().replace(' ','')).css({'opacity': '1'})
+              $('#' + links[i].source.id.toString().replace(' ','')).css({'opacity': '1'})
+            }
+          }
+
+          for(i=0; i < links_linked.length; i++){
+            $('#' + links_linked[i]).css({'opacity': '1'})
+          }
+
+      }
+
+
+
+
+        function dimLinks(){
+        	$('line').css({'opacity':'0.1'})
+        }
+
+        function BrightenLinks(){
+          $('line').css({'opacity':'1'})
+        }
+
+        function dimNodes(){
+          $('circle').css({'opacity': '0.1'})
+        }
+        function BrightenNodes(){
+          $('circle').css({'opacity': '1'})
+        }
+
+        </script>
+        <script>
+
+        </script>
+  
+    
+        </html>
+        <table width=300 align=left><tr><td colspan=3 align=center><b>SUMMARY</b></td></tr><tr><td><b>Handle</b></td><td><b>Type</b></td><td><b>In-Degree</b></td></tr><tr><td>adamfeuerstein</td><td>Media</td><td>27</td><tr><td>AndyBiotech</td><td>Advocacy</td><td>26</td><tr><td>Biotech2050</td><td>Industry</td><td>25</td><tr><td>mtmdphd</td><td>HCPs</td><td>24</td><tr><td>hmkyale</td><td>HCPs</td><td>21</td><tr><td>JohnCendpts</td><td>Media</td><td>19</td><tr><td>tgtxdough</td><td>Industry</td><td>19</td><tr><td>Novartis</td><td>Industry</td><td>17</td><tr><td>skathire</td><td>HCPs</td><td>17</td><tr><td>matthewherper</td><td>Media</td><td>15</td><tr><td>Celgene</td><td>Industry</td><td>14</td><tr><td>Amgen</td><td>Industry</td><td>14</td><tr><td>dsobek</td><td>Media</td><td>14</td><tr><td>DShaywitz</td><td>HCPs</td><td>13</td><tr><td>subset_member</td><td>Industry</td><td>12</td><tr><td>ethanjweiss</td><td>HCPs</td><td>11</td><tr><td>fastercures</td><td>Advocacy</td><td>10</td><tr><td>TuftsB</td><td>Patients</td><td>10</td><tr><td>Aiims1742</td><td>HCPs</td><td>10</td><tr><td>theMMRF</td><td>Industry</td><td>10</td><tr><td>SethJBaumMD</td><td>HCPs</td><td>10</td><tr><td>megtirrell</td><td>Media</td><td>9</td><tr><td>BioWriterChik</td><td>Media</td><td>8</td><tr><td>HeartOTXHeartMD</td><td>HCPs</td><td>8</td><tr><td>DrPaulyDeSantis</td><td>Industry</td><td>8</td><tr><td>ScripMandy</td><td>Media</td><td>8</td><tr><td>jq1234t</td><td>Industry</td><td>8</td><tr><td>mikegoodma</td><td>Media</td><td>7</td><tr><td>biogen</td><td>Industry</td><td>7</td><tr><td>CMichaelGibson</td><td>HCPs</td><td>7</td><tr><td>BBethJo</td><td>Patients</td><td>7</td><tr><td>genentech</td><td>Industry</td><td>7</td><tr><td>MarcoBiotech</td><td>Media</td><td>7</td><tr><td>cardiobrief</td><td>Media</td><td>7</td><tr><td>endpts</td><td>Media</td><td>6</td><tr><td>jenniegrimes</td><td>Patients</td><td>6</td><tr><td>SOTHCardiology</td><td>HCPs</td><td>6</td><tr><td>stales</td><td>Patients</td><td>6</td><tr><td>MarilynMann</td><td>Patients</td><td>6</td><tr><td>sharkbiotech</td><td>Media</td><td>6</td><tr><td>EmmaHokie</td><td>Industry</td><td>6</td><tr><td>Lin_ling_88</td><td>Industry</td><td>6</td><tr><td>DonnaYoungDC</td><td>Media</td><td>5</td><tr><td>BobCoughlin</td><td>Advocacy</td><td>5</td><tr><td>rleuty_biotech</td><td>Media</td><td>5</td><tr><td>cpcannon</td><td>HCPs</td><td>5</td><tr><td>BosBizDon</td><td>Media</td><td>5</td><tr><td>ValleAlfonso</td><td>HCPs</td><td>5</td><tr><td>forbeshealth</td><td>Media</td><td>5</td><tr><td>DrMiguelPerales</td><td>HCPs</td><td>5</td></table><form action="" method=post enctype=multipart/form-data><input type=submit value=Publish>
